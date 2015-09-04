@@ -157,13 +157,18 @@ JHANDLER_FUNCTION(Compile, handler){
 }
 
 
+static JResult CallEvalBuiltin(const char* source) {
+  return JObject::Eval(source);
+}
+
+
 JHANDLER_FUNCTION(CompileNativePtr, handler){
   IOTJS_ASSERT(handler.GetArgLength() == 1);
   IOTJS_ASSERT(handler.GetArg(0)->IsObject());
 
-  String source((const char*)handler.GetArg(0)->GetNative());
+  const char* source = (const char*)handler.GetArg(0)->GetNative();
 
-  JResult jres = WrapEval(source);
+  JResult jres = CallEvalBuiltin(source);
 
   if (jres.IsOk()) {
     handler.Return(jres.value());
