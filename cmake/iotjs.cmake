@@ -210,6 +210,11 @@ foreach(MODULE ${IOTJS_ENABLED_MODULES})
       endif()
     endforeach()
 
+    # Add common external shared library for linking
+    foreach(idx ${${MODULE_PREFIX}external_shared_lib})
+      list(APPEND EXTERNAL_SHARED_LIB ${${MODULE_PREFIX}external_shared_lib_${idx}})
+    endforeach()
+
     getListOfVarsStartWith("${MODULE_PREFIX}" MODULE_KEYS)
     list(FIND MODULE_KEYS "platforms" PLATFORMS_KEY)
 
