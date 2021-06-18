@@ -26,11 +26,18 @@
 static jerry_value_t wrap_eval(const char* name, size_t name_len,
                                const char* source, size_t length) {
   static const char* args = "exports, require, module, native";
+  jerry_parse_options_t parse_options;
+  parse_options.options = JERRY_PARSE_HAS_RESOURCE | JERRY_PARSE_HAS_START;
+  parse_options.resource_name_p = (const jerry_char_t*)name;
+  parse_options.resource_name_length = name_len;
+  parse_options.start_line = 1;
+  parse_options.start_column = 1;
+
+
   jerry_value_t res =
-      jerry_parse_function((const jerry_char_t*)name, name_len,
-                           (const jerry_char_t*)args, strlen(args),
+      jerry_parse_function((const jerry_char_t*)args, strlen(args),
                            (const jerry_char_t*)source, length,
-                           JERRY_PARSE_NO_OPTS);
+                           &parse_options);
 
   return res;
 }
@@ -377,12 +384,13 @@ jerry_value_t iotjs_init_process(void) {
   iotjs_jval_set_method(process, IOTJS_MAGIC_STRING_GC, garbage_collector);
 #endif
 #ifdef DEBUG
-  jerry_property_descriptor_t prop_desc;
-  jerry_init_property_descriptor_fields(&prop_desc);
+  jerry_property_descriptor_t prop_desc = jerry_property_descriptor_create();
 
-  prop_desc.is_value_defined = true;
-  prop_desc.is_writable_defined = true;
-  prop_desc.is_configurable_defined = true;
+  prop_desc.flags |= JERRY_PROP_IS_VALUE_DEFINED
+    // JERRY_PROP_IS_VALUE_DEFINED is not set so this is not writable
+    | JERRY_PROP_IS_WRITABLE_DEFINED
+    // JERRY_PROP_IS_CONFIGURABLE is not set so this is not configurable
+    | JERRY_PROP_IS_CONFIGURABLE_DEFINED;
   prop_desc.value = jerry_create_boolean(true);
 
   jerry_value_t property_name =
@@ -391,7 +399,8 @@ jerry_value_t iotjs_init_process(void) {
       jerry_define_own_property(process, property_name, &prop_desc);
   jerry_release_value(prop_ret_val);
   jerry_release_value(property_name);
-  jerry_free_property_descriptor_fields(&prop_desc);
+
+  jerry_property_descriptor_free(&prop_desc);
 #endif
 /* FIXME: Move this platform dependent code path to libtuv
  *

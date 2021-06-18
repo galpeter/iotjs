@@ -417,7 +417,8 @@ JS_FUNCTION(js_func_execute) {
 }
 
 
-static jerry_value_t iotjs_http_parser_pause(jerry_value_t jthis, int paused) {
+static jerry_value_t iotjs_http_parser_pause(
+    const jerry_call_info_t* call_info_p, int paused) {
   JS_DECLARE_THIS_PTR(http_parserwrap, parser);
 
   http_parser* nativeparser = &parser->parser;
@@ -427,12 +428,12 @@ static jerry_value_t iotjs_http_parser_pause(jerry_value_t jthis, int paused) {
 
 
 JS_FUNCTION(js_func_pause) {
-  return iotjs_http_parser_pause(jthis, 1);
+  return iotjs_http_parser_pause(call_info_p, 1);
 }
 
 
 JS_FUNCTION(js_func_resume) {
-  return iotjs_http_parser_pause(jthis, 0);
+  return iotjs_http_parser_pause(call_info_p, 0);
 }
 
 

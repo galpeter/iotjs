@@ -204,8 +204,7 @@ JS_FUNCTION(fs_open) {
 
 typedef enum { IOTJS_FS_READ, IOTJS_FS_WRITE } iotjs_fs_op_t;
 
-jerry_value_t fs_do_read_or_write(const jerry_value_t jfunc,
-                                  const jerry_value_t jthis,
+jerry_value_t fs_do_read_or_write(const jerry_call_info_t *call_info_p,
                                   const jerry_value_t jargv[],
                                   const jerry_length_t jargc,
                                   const iotjs_fs_op_t fs_op) {
@@ -252,12 +251,12 @@ jerry_value_t fs_do_read_or_write(const jerry_value_t jfunc,
 
 
 JS_FUNCTION(fs_read) {
-  return fs_do_read_or_write(jfunc, jthis, jargv, jargc, IOTJS_FS_READ);
+  return fs_do_read_or_write(call_info_p, jargv, jargc, IOTJS_FS_READ);
 }
 
 
 JS_FUNCTION(fs_write) {
-  return fs_do_read_or_write(jfunc, jthis, jargv, jargc, IOTJS_FS_WRITE);
+  return fs_do_read_or_write(call_info_p, jargv, jargc, IOTJS_FS_WRITE);
 }
 
 

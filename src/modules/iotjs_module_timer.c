@@ -42,7 +42,7 @@ static void timeout_handler(uv_timer_t* handle) {
 
 JS_FUNCTION(timer_start) {
   // Check parameters.
-  JS_DECLARE_PTR(jthis, uv_timer_t, timer_handle);
+  JS_DECLARE_PTR(call_info_p->this_value, uv_timer_t, timer_handle);
   DJS_CHECK_ARGS(2, number, number);
 
   // parameters.
@@ -57,7 +57,7 @@ JS_FUNCTION(timer_start) {
 
 
 JS_FUNCTION(timer_stop) {
-  JS_DECLARE_PTR(jthis, uv_handle_t, timer_handle);
+  JS_DECLARE_PTR(call_info_p->this_value, uv_handle_t, timer_handle);
   // Stop timer.
 
   if (!uv_is_closing(timer_handle)) {

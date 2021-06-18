@@ -99,8 +99,13 @@ extern void force_terminate(void);
 
 #define IOTJS_DEFINE_NATIVE_HANDLE_INFO_THIS_MODULE(name)                  \
   static void iotjs_##name##_destroy(iotjs_##name##_t* wrap);              \
+  static void iotjs_##name##_free_trampoline(                              \
+        void *data_p, jerry_object_native_info_t *native_p) {              \
+    /* TODO adapt all callbacks to the new format */                       \
+     iotjs_##name##_destroy((iotjs_##name##_t*)data_p);                    \
+  }                                                                        \
   static const jerry_object_native_info_t this_module_native_info = {      \
-    .free_cb = (jerry_object_native_free_callback_t)iotjs_##name##_destroy \
+    .free_cb = iotjs_##name##_free_trampoline,                             \
   }
 
 #include <uv.h>

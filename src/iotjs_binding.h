@@ -132,8 +132,6 @@ jerry_value_t iotjs_jhelper_eval(const char* name, size_t name_len,
 #define JS_CHECK_ARGS(argc, ...) \
   JS_CHECK(jargc >= argc && JS_CHECK_ARGS_##argc(__VA_ARGS__))
 
-#define JS_CHECK_THIS() JS_CHECK(jerry_value_is_object(jthis))
-
 #define JS_GET_ARG(index, type) iotjs_jval_as_##type(jargv[index])
 
 #define JS_GET_ARG_IF_EXIST(index, type)                  \
@@ -141,13 +139,16 @@ jerry_value_t iotjs_jhelper_eval(const char* name, size_t name_len,
        ? jargv[index]                                     \
        : jerry_create_null())
 
-#define JS_GET_THIS() iotjs_jval_as_object(jthis)
+#define JS_FUNCTION(name)                                         \
+  static jerry_value_t name(const jerry_call_info_t *call_info_p, \
+                            const jerry_value_t jargv[],          \
+                            const jerry_length_t jargc)           \
 
-#define JS_FUNCTION(name)                                \
-  static jerry_value_t name(const jerry_value_t jfunc,   \
-                            const jerry_value_t jthis,   \
-                            const jerry_value_t jargv[], \
-                            const jerry_length_t jargc)
+#define JS_GET_THIS() iotjs_jval_as_object(call_info_p->this_value)
+
+#define JS_CHECK_THIS() \
+  JS_CHECK(jerry_value_is_object(call_info_p->this_value))
+
 
 #if defined(EXPERIMENTAL) && !defined(DEBUG)
 // This code branch is to be in #ifdef NDEBUG
@@ -174,7 +175,7 @@ jerry_value_t iotjs_jhelper_eval(const char* name, size_t name_len,
   } while (0)
 
 #define JS_DECLARE_THIS_PTR(type, name) \
-  JS_DECLARE_PTR(jthis, iotjs_##type##_t, name)
+  JS_DECLARE_PTR(call_info_p->this_value, iotjs_##type##_t, name)
 
 #define JS_DECLARE_OBJECT_PTR(index, type, name) \
   JS_DECLARE_PTR(jargv[index], iotjs_##type##_t, name)

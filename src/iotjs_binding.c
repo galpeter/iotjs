@@ -369,10 +369,19 @@ jerry_value_t iotjs_jval_get_property_by_index(jerry_value_t jarr,
 jerry_value_t iotjs_jhelper_eval(const char* name, size_t name_len,
                                  const uint8_t* data, size_t size,
                                  bool strict_mode) {
-  uint32_t opts = strict_mode ? JERRY_PARSE_STRICT_MODE : JERRY_PARSE_NO_OPTS;
+  jerry_parse_options_t parse_options;
+  parse_options.options = JERRY_PARSE_HAS_RESOURCE | JERRY_PARSE_HAS_START;
+  parse_options.resource_name_p = (const jerry_char_t*)name;
+  parse_options.resource_name_length = name_len;
+  parse_options.start_line = 1;
+  parse_options.start_column = 1;
 
-  jerry_value_t jres = jerry_parse((const jerry_char_t*)name, name_len,
-                                   (const jerry_char_t*)data, size, opts);
+  if (strict_mode) {
+    parse_options.options |= JERRY_PARSE_STRICT_MODE;
+  }
+
+  jerry_value_t jres = jerry_parse((const jerry_char_t*)data, size,
+                                   &parse_options);
 
   if (!jerry_value_is_error(jres)) {
     jerry_value_t func = jres;

@@ -78,7 +78,7 @@ void after_close(uv_handle_t* handle) {
 
 // Close socket
 JS_FUNCTION(tcp_close) {
-  JS_DECLARE_PTR(jthis, uv_handle_t, uv_handle);
+  JS_DECLARE_PTR(call_info_p->this_value, uv_handle_t, uv_handle);
 
   iotjs_uv_handle_close(uv_handle, after_close);
   return jerry_create_undefined();
@@ -90,7 +90,7 @@ JS_FUNCTION(tcp_close) {
 // [0] address
 // [1] port
 JS_FUNCTION(tcp_bind) {
-  JS_DECLARE_PTR(jthis, uv_tcp_t, tcp_handle);
+  JS_DECLARE_PTR(call_info_p->this_value, uv_tcp_t, tcp_handle);
 
   DJS_CHECK_ARGS(2, string, number);
 
@@ -120,7 +120,7 @@ static void after_connect(uv_connect_t* req, int status) {
 // [1] port
 // [2] callback
 JS_FUNCTION(tcp_connect) {
-  JS_DECLARE_PTR(jthis, uv_tcp_t, tcp_handle);
+  JS_DECLARE_PTR(call_info_p->this_value, uv_tcp_t, tcp_handle);
 
   DJS_CHECK_ARGS(3, string, number, function);
 
@@ -205,7 +205,7 @@ static void on_connection(uv_stream_t* handle, int status) {
 
 
 JS_FUNCTION(tcp_listen) {
-  JS_DECLARE_PTR(jthis, uv_tcp_t, tcp_handle);
+  JS_DECLARE_PTR(call_info_p->this_value, uv_tcp_t, tcp_handle);
   DJS_CHECK_ARGS(1, number);
 
   int backlog = JS_GET_ARG(0, number);
@@ -221,7 +221,7 @@ void AfterWrite(uv_write_t* req, int status) {
 
 
 JS_FUNCTION(tcp_write) {
-  JS_DECLARE_PTR(jthis, uv_stream_t, tcp_handle);
+  JS_DECLARE_PTR(call_info_p->this_value, uv_stream_t, tcp_handle);
   DJS_CHECK_ARGS(2, object, function);
 
   const jerry_value_t jbuffer = JS_GET_ARG(0, object);
@@ -303,7 +303,7 @@ static void on_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) {
 
 
 JS_FUNCTION(tcp_read_start) {
-  JS_DECLARE_PTR(jthis, uv_stream_t, tcp_handle);
+  JS_DECLARE_PTR(call_info_p->this_value, uv_stream_t, tcp_handle);
 
   int err = uv_read_start(tcp_handle, on_alloc, on_read);
 
@@ -317,7 +317,7 @@ static void AfterShutdown(uv_shutdown_t* req, int status) {
 
 
 JS_FUNCTION(tcp_shutdown) {
-  JS_DECLARE_PTR(jthis, uv_stream_t, tcp_handle);
+  JS_DECLARE_PTR(call_info_p->this_value, uv_stream_t, tcp_handle);
 
   DJS_CHECK_ARGS(1, function);
 
@@ -339,7 +339,7 @@ JS_FUNCTION(tcp_shutdown) {
 // [0] enable
 // [1] delay
 JS_FUNCTION(tcp_set_keep_alive) {
-  JS_DECLARE_PTR(jthis, uv_tcp_t, tcp_handle);
+  JS_DECLARE_PTR(call_info_p->this_value, uv_tcp_t, tcp_handle);
 
   DJS_CHECK_ARGS(2, number, number);
 
@@ -399,7 +399,7 @@ void address_to_js(jerry_value_t obj, const sockaddr* addr) {
 
 
 JS_FUNCTION(tcp_get_socket_name) {
-  JS_DECLARE_PTR(jthis, uv_tcp_t, tcp_handle);
+  JS_DECLARE_PTR(call_info_p->this_value, uv_tcp_t, tcp_handle);
 
   DJS_CHECK_ARGS(1, object);
 
